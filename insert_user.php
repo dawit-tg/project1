@@ -1,7 +1,4 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 require 'connection.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
@@ -20,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-    // ✅ FIXED COLUMN NAME
+  
     $stmt = $conn->prepare(
         "INSERT INTO userinfo 
         (username, fullname, userrole, password_hash, BDate, gender)

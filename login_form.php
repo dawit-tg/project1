@@ -1,13 +1,6 @@
 <?php
-session_start();
-require 'connection.php';
 
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
-    header("Location: login.php");
-    exit;
-}
-
-
+require'connection.php';
 $result = mysqli_query($conn, "SELECT * FROM books");
 ?>
 
@@ -99,7 +92,7 @@ $result = mysqli_query($conn, "SELECT * FROM books");
                       margin-left: 20px;
                       max-height: 0;
                       overflow: hidden;
-                      background: chocolate;
+                      background: chocolate
                       transition: max-height 0.3s ease;
                     }
                     
@@ -150,51 +143,96 @@ $result = mysqli_query($conn, "SELECT * FROM books");
             height: 100%;
             margin-top:8vw;
         }
+     .login-container {
+            width: 400px;
+            padding: 40px;
+            border-radius: 14px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            background-color:#eef4f4;;
+        }
 
-        .center-box {
-            background: #fff;
-            padding: 40px 60px;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        .login-container h2 {
             text-align: center;
+            margin-bottom: 8px;
+            color: #333;
         }
 
-        .center-box h1 {
-            color: #e74c3c;
+        .login-container p {
+            text-align: center;
             margin-bottom: 30px;
+            color: #777;
+            font-size: 14px;
         }
 
-        .center-links {
-            display: grid;
-            grid-template-columns: auto auto;
-            gap: 25px 60px;
-            align-items: center;
+    
+        .form-group {
+            margin-bottom: 18px;
         }
 
-        .label {
-            color: red;
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            outline: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #eef4f4;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #658eea;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
             font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
         }
 
-        .center-links a {
-            color: green;
-            font-weight: bold;
+        .login-btn:hover {
+            background: #5a67d8;
+        }
+
+        .extra-links {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .extra-links a {
+            color: #667eea;
             text-decoration: none;
-            font-size: 18px;
         }
 
-        .center-links a:hover {
+        .extra-links a:hover {
             text-decoration: underline;
         }
   </style>
 </head>
-
 <body>
      <header class="header_content">
              <div class="dropdown">
                <button class="dropbtn ">menu</button>
                 <div class="dropdown-content">
-                    <a href="logout.php">Logout</a>
+                    <a href="#">Logout</a>
                     <a href="#">Profile</a>
                     <a href="#">Setting</a>
                 </div>
@@ -202,9 +240,11 @@ $result = mysqli_query($conn, "SELECT * FROM books");
                <h1>Digital Library Mangnment System</h1>
              <div class="logo">
                  <a class ="imga" href="index1.html"><img src="devo8.png" alt="the image doesen't set"> </a>
+                 
              </div>
+             
+            
         </header>
-
         <section>
           <div class="left-side">
                <div class="home">
@@ -225,26 +265,38 @@ $result = mysqli_query($conn, "SELECT * FROM books");
                   </ul>
                </ul>
        </div>
-
        <div class="center-content">
-            <div class="center-box">
+        <div class="login-container">
+            <h2>Login</h2>
+            <p>Digital Library Management System</p>
 
-                <h1>Admin Dashboard</h1>
+            <form action="login.php" method="POST">
 
-                <div class="center-links">
-                    <div class="label">For Add Book</div>
-                    <a href="add_book.php">Add</a>
-
-                    <div class="label">For Delete Book</div>
-                    <a href="delete_book.php">Delete</a>
-
-                    <div class="label">For Edit Book</div>
-                    <a href="edit_book.php">Edit</a>
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" name="username" placeholder="Enter username" required>
                 </div>
 
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" placeholder="Enter password" required>
+                </div>
+
+                <div class="form-group">
+                    <label>User Role</label>
+                    <select name="userrole" required>
+                        <option value="">-- Select Role --</option>
+                        <option value="admin">Admin</option>
+                        <option value="user">User</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+
+            <div class="extra-links">
+                <a href="#">Forgot Password?</a>
             </div>
        </div>
-</section>
-
 </body>
 </html>
