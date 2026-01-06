@@ -1,50 +1,28 @@
 <?php
-require 'connection.php';
+require'connection.php';
+$username = $_POST['username'] ?? '';
+$fullname = $_POST['fullname'] ?? '';
+$userrole = $_POST['userrole'] ?? '';
+$password = $_POST['password'] ?? ''; 
+$dob = $_POST['dob'] ?? null;
+$gender = $_POST['gender'] ?? '';
 
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
-
-    $username = trim($_POST['username']);
-    $fullname = trim($_POST['fullname']);
-    $userrole = trim($_POST['userrole']);
-    $password = $_POST['password'];
-    $confirm  = $_POST['confirmPassword'];
-    $bdate    = $_POST['dob'];
-    $gender   = $_POST['gender'];
-
-    if ($password !== $confirm) {
-        die("Passwords do not match!");
-    }
-
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-  
-    $stmt = $conn->prepare(
-        "INSERT INTO userinfo 
-        (username, fullname, userrole, password_hash, BDate, gender)
-        VALUES (?, ?, ?, ?, ?, ?)"
-    );
-
-    if (!$stmt) {
-        die("Prepare failed: " . $conn->error);
-    }
-
-    $stmt->bind_param(
-        "ssssss",
-        $username,
-        $fullname,
-        $userrole,
-        $hashedPassword,
-        $bdate,
-        $gender
-    );
-
-    if ($stmt->execute()) {
-        echo "User registered successfully!";
-    } else {
-        echo "Execute error: " . $stmt->error;
-    }
-
-    $stmt->close();
-    $conn->close();
+if (empty($username) || empty($fullname) || empty($userrole) || empty($password) || empty($gender)) {
+    die("Please fill in all required fields.");
 }
+
+
+$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+$stmt = $conn->prepare("INSERT INTO users (username, fullname, userrole, password, dob, gender) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("ssssss", $username, $fullname, $userrole, $hashed_password, $dob, $gender);
+
+if ($stmt->execute()) {
+    echo "New record created successfully";
+} else {
+    echo "Error: " . $stmt->error;
+}
+
+$stmt->close();
+$conn->close();
 ?>

@@ -160,13 +160,6 @@
             color: #666;
             cursor: not-allowed;
         }
-
-        .error {
-            color: red;
-            font-size: 0.9em;
-            min-height: 20px;
-        }
-
         input[type="submit"],[type="reset"] {
             margin-top: 15px;
             background: #1e90ff;
@@ -203,14 +196,18 @@
              <div class="dropdown">
                <button class="dropbtn ">menu</button>
                 <div class="dropdown-content">
-                    <a href="#">Logout</a>
+                    <a href="login_form.php">Login</a>
                     <a href="#">Profile</a>
                     <a href="#">Setting</a>
+                    <a href="#">About Us</a>
+                    <a href="#">Contact Us</a>
+                    <a href="#">help</a>
+                    <a href="feebak.php">feedback</a>
                 </div>
              </div>
                <h1>Digital Library Mangnment System</h1>
              <div class="logo">
-                 <a class ="imga" href="index1.html"><img src="devo8.png" alt="the image doesen't set"> </a>
+                 <a class ="imga" href="index1.php"><img src="devo8.png" alt="the image doesen't set"> </a>
                  
              </div>
              
@@ -219,191 +216,62 @@
         <section>
           <div class="left-side">
                <div class="home">
-                <a href="index1.html">Home</a>
-                <a href="register_form.html">Registeration </a>
-                <a href="book_list.html">Books</a>
+                <a href="index.php">Home</a>
+                <a href="register_form.php">Registeration </a>
+                <a href="login_form.php">Login</a>
              </div>
-                <ul>
-                  <input type="checkbox" id="dashbord">
-                  <label for="dashbord">Dashbord</label>
-                  <ul>
-                    <li><a href="#">Show Borrowed books</a></li>
-                    <li><a href="#">Reading history</a></li>
-                    <li><a href="#">Admin Dashbord</a></li>
-                  </ul>
-               </ul>
        </div>
 
        <div class="center_content">
                 <div class="form-container">
                     <h2>User Registration</h2>
-                    <!-- The novalidate attribute prevents the browser's built-in form validation -->
-                   <form id="userForm" action="insert_user.php" method="POST">
+                   
+                   <form action="insert_user.php" method="POST">
 
                         <label for="username">Username:</label>
-                        <input type="text" id="username" name="username">
-                        <div class="error" id="usernameError"></div>
+                        <input type="text" id="username" name="username" required>
+                       
 
 
                         <label for="fullname">Full Name:</label>
-                        <input type="text" id="fullname" name="fullname">
-                        <div class="error" id="fullnameError"></div>
+                        <input type="text" id="fullname" name="fullname" required>
+                       
 
                         <label for="userrole">User Role:</label>
-                        <input type="text" id="userrole"name="userrole">
-                        <div class="error" id="userroleError"></div>
+                        <input type="text" id="userrole"name="userrole"required>
+                        
 
                          <label for="password">Password:</label>
-                        <input type="password" id="password" name="password">
-                        <div class="error" id="passwordError" ></div>
+                        <input type="password" id="password" name="password" required>
+                        
 
                         <label for="confirmPassword">Confirm Password:</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword">
-                        <div class="error" id="confirmPasswordError"></div>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        
 
                         <label for="dob">Date of Birth:</label>
-                        <input type="date" id="dob" name="dob">
-                        <div class="error" id="dobError"></div>
+                        <input type="date" id="dob" name="dob" required>
+                        
 
                         <label>Gender:</label>
-                        <select id="gender" name="gender">
+                        <select id="gender" name="gender" required>
                             <option value="">Select gender</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                         </select>
-                        <div class="error" id="genderError"></div>
+                       
 
                         <div class="button-container">
                             <input type="reset" value="Clear">
                             <input type="submit"  value="Register">
                         </div>
-                        <div class="success-message" id="successMessage">
-                            Registration successful!
-                        </div>
+                      
                     </form>
                  </div>
               </div>
            </section>
 
-    <script>
-        // This is a helper function to calculate age from date of birth
-        function calculateAge(dob) {
-            const today = new Date();
-            const birthDate = new Date(dob);
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const monthDiff = today.getMonth() - birthDate.getMonth();
-
-            // Adjust age if birthday hasn't occurred this year yet
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-
-            return age;
-        }
-
-        // Event listener for date of birth field
-        document.getElementById('dob').addEventListener('change', function () {
-            const dob = this.value;
-            const ageField = document.getElementById('age');
-
-            if (dob) {
-                const age = calculateAge(dob);
-                ageField.value = age;
-
-                // Validate if student is at least 16 years old
-                if (age < 16) {
-                    document.getElementById('dobError').textContent = "Student must be at least 16 years old!";
-                } else {
-                    document.getElementById('dobError').textContent = "";
-                }
-            } else {
-                ageField.value = "";
-            }
-        });
-
-        document.getElementById("userForm").addEventListener("submit", function (e) {
-            e.preventDefault(); 
-            // Handle each form field values in constants
-            const fullname = document.getElementById("fullname").value.trim();
-            const username = document.getElementById("username").value.trim();
-            const userrole = document.getElementById("userrole").value.trim();
-            const dob = document.getElementById("dob").value.trim();
-            const gender = document.getElementById("gender").value.trim();
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("confirmPassword").value;
-
-            // Clear previous error messages
-            document.querySelectorAll(".error").forEach(el => el.textContent = "");
-
-            // Declare flag controller as error tracker
-            let valid = true;
-
-
-             if (username === "") {
-                document.getElementById("usernameError").textContent = "username  is required!";
-                valid = false;
-            }
-            // Validate full name
-            if (fullname === "") {
-                document.getElementById("fullnameError").textContent = "Full name is required!";
-                valid = false;
-            } else if (fullname.length < 3) {
-                document.getElementById("fullnameError").textContent = "Name must be at least 3 characters long!";
-                valid = false;
-            } else if (fullname.length > 30) {
-                document.getElementById("fullnameError").textContent = "Name must be at most 30 characters long!";
-                valid = false;
-            }
-
-                
-            // Validate date of birth
-            if (dob === "") {
-                document.getElementById("dobError").textContent = "Date of birth is required!";
-                valid = false;
-            } else {
-                const age = calculateAge(dob);
-                if (age < 16) {
-                    document.getElementById("dobError").textContent = "Student must be at least 16 years old!";
-                    valid = false;
-                }
-            }
-
-   
-
-            // Validate password
-            if (password === "") {
-                document.getElementById("passwordError").textContent = "Password is required!";
-                valid = false;
-            } else if (password.length < 8) {
-                document.getElementById("passwordError").textContent = "Password must be at least 8 characters long!";
-                valid = false;
-            }
-
-            // Validate confirm password
-            if (confirmPassword === "") {
-                document.getElementById("confirmPasswordError").textContent = "Please confirm your password!";
-                valid = false;
-            } else if (password !== confirmPassword) {
-                document.getElementById("confirmPasswordError").textContent = "Passwords do not match!";
-                valid = false;
-            }
-
-            // If all validations pass
-            if (valid) {
-                document.getElementById("successMessage").style.display = "block";
-                setTimeout(() => {
-                    document.getElementById("successMessage").style.display = "none";
-                    e.target.reset();
-                }, 3000);
-            }
-        });
-
-        // Reset form handler
-        document.getElementById("userForm").addEventListener("reset", function () {
-            document.querySelectorAll(".error").forEach(el => el.textContent = "");
-            document.getElementById("successMessage").style.display = "none";
-        });
-    </script>
+    
 
         </body>
     </html>

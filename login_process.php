@@ -1,34 +1,42 @@
 <?php
 session_start();
-require'connection.php';
+require 'connection.php';
 
-$username = $_POST['username'];
-$password = $_POST['password'];
-$role     = $_POST['userrole'];
+$error = "";
 
-$sql = "SELECT * FROM userinfo 
-        WHERE username='$username' 
-        AND password='$password' 
-        AND role='$userrole'";
 
-$result = mysqli_query($conn, $sql);
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-// If user exists
-if (mysqli_num_rows($result) == 1) {
-    $user = mysqli_fetch_assoc($result);
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $userrole = $_POST['userrole'];
 
-    // Save data in session
-    $_SESSION['username'] = $user['username'];
-    $_SESSION['role']     = $user['role'];
+    $sql = "SELECT * FROM users WHERE username = ? AND userrole = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "ss", $username, $userrole);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
 
-    // Redirect based on role
-    if ($user['role'] === 'admin') {
-        header("Location: admin_dashboard.php");
+    if ($user = mysqli_fetch_assoc($result)) {
+
+        if (password_verify($password, $user['password'])) {
+
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['userrole'] = $user['userrole'];
+
+            if ($user['userrole'] === 'admin') {
+                header("Location: admin_dashebord.php");
+            } else {
+                header("Location: book_list.php");
+            }
+            exit;
+
+        } else {
+            $error = "Password is wrong";
+        }
+
     } else {
-        header("Location: books.php");
+        $error = "User not found";
     }
-    exit;
-} else {
-    echo "Invalid login details";
 }
 ?>

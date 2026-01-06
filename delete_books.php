@@ -1,3 +1,16 @@
+<?php
+session_start();
+require 'connection.php';
+
+/* Allow only admin */
+if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
+    header("Location: login_form.php");
+    exit;
+}
+
+$result = mysqli_query($conn, "SELECT * FROM books");
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -61,14 +74,13 @@
            
             
          }
-        /* Reset */
+      /* Reset */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
-
 
 
 /* Top menu links */
@@ -157,51 +169,68 @@ label[for="dashbord"]:hover {
         border-radius: 15px 0px  0px 15px;
         background-position-x: right;
         margin-top: 8vw;
-       
+        display: block;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
        }
-      .center-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            margin-top:8vw;
-        }
+  
 
-        .center-box {
-            background: #fff;
-            padding: 40px 60px;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            text-align: center;
-        }
 
-        .center-box h1 {
-            color: #e74c3c;
-            margin-bottom: 30px;
-        }
 
-        .center-links {
-            display: grid;
-            grid-template-columns: auto auto;
-            gap: 25px 60px;
-            align-items: center;
-        }
+h2 {
+    color: #333;
+    margin-bottom: 20px;
+    margin-left:20vw;
+}
 
-        .label {
-            color: red;
-            font-weight: bold;
-        }
+/* Table */
+table {
+    border-collapse: collapse;
+    width: 60%;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+     margin-left:20vw;
+}
 
-        .center-links a {
-            color: green;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 18px;
-        }
+th, td {
+    padding: 12px 15px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
 
-        .center-links a:hover {
-            text-decoration: underline;
-        }
+th {
+    background-color: #2c3e50;
+    color: #fff;
+}
+
+/* Delete link */
+a.delete-link {
+    color: red;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a.delete-link:hover {
+    color: darkred;
+    text-decoration: underline;
+}
+
+/* Back link */
+.back-link {
+    display: inline-block;
+    margin-top: 15px;
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: bold;
+     margin-left:20vw;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+
   </style>
 </head>
 
@@ -216,7 +245,7 @@ label[for="dashbord"]:hover {
                     <a href="#">about Us</a>
                     <a href="#">Contact us</a>
                     <a href="#">help</a>
-                    <a href="feedbak.php">feedback</a>
+                    <a href="#">feedback</a>
                 </div>
              </div>
                <h1>Digital Library Mangnment System</h1>
@@ -231,42 +260,46 @@ label[for="dashbord"]:hover {
                 <a href="index.php">Home</a>
                 <a href="register_form.php">Registeration </a>
                 <a href="book_list.php">Books</a>
-                <a href="book_borrow.php"> Borrow Books</a>
-               
-                
              </div>
                 <ul>
                   <input type="checkbox" id="dashbord">
                   <label for="dashbord">Dashbord</label>
                   <ul>
-                    <li><a href="borrowed_book.php">Show Borrowed books</a></li>
-                    <li><a href="borrow_history.php"> borrow history</a></li>
-                    <li><a href="#">user</a></li>
+                    <li><a href="borrow_history.php">Show Borrowed books</a></li>
+                    <li><a href="#">Reading history</a></li>
                   </ul>
                </ul>
        </div>
 
-       <div class="center-content">
-            <div class="center-box">
+       <div class="center_content">
+            <h2>Delete Books</h2>
 
-                <h1> WelCome To Admin Dashboard</h1><br><br>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Action</th>
+                </tr>
 
-                <div class="center-links">
-                    <div class="label">For Add Book</div>
-                    <a href="add_books.php">Add</a>
+                <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                <tr>
+                    <td><?php echo $row['book_id']; ?></td>
+                    <td><?php echo htmlspecialchars($row['title']); ?></td>
+                    <td><?php echo htmlspecialchars($row['author']); ?></td>
+                    <td>
+                        <a href="delete_books_process.php?id=<?php echo $row['book_id']; ?>"
+                        class="delete-link"
+                        onclick="return confirm('Are you sure you want to delete this book?');">
+                        Delete
+                        </a>
+                    </td>
+                </tr>
+                <?php endwhile; ?>
+            </table>
 
-                    <div class="label">For Delete Book</div>
-                    <a href="delete_books.php">Delete</a>
-                        
-                    <div class="label">For Edit Book</div>
-                    <a href="edit_books.php">Edit</a>
-
-                    <br><br>
-                </div>
-
-            </div>
-       </div>
-</section>
-
-</body>
+            <a href="admin_dashebord.php" class="back-link">⬅ Back to Dashboard</a>
+     </div>
+  </section>
+ </body>
 </html>

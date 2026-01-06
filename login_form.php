@@ -1,8 +1,46 @@
 <?php
+session_start();
+require 'connection.php';
 
-require'connection.php';
-$result = mysqli_query($conn, "SELECT * FROM books");
+$error = "";
+
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $userrole = $_POST['userrole'];
+
+    $sql = "SELECT * FROM users WHERE username = ? AND userrole = ?";
+    $stmt = mysqli_prepare($conn, $sql);
+    mysqli_stmt_bind_param($stmt, "ss", $username, $userrole);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    if ($user = mysqli_fetch_assoc($result)) {
+
+        if (password_verify($password, $user['password'])) {
+
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['userrole'] = $user['userrole'];
+
+            if ($user['userrole'] === 'admin') {
+                header("Location: admin_dashebord.php");
+            } else {
+                header("Location: book_list.php");
+            }
+            exit;
+
+        } else {
+            $error = "Password is wrong";
+        }
+
+    } else {
+        $error = "User not found";
+    }
+}
 ?>
+
 
 <!DOCTYPE html>
 <html>
@@ -94,6 +132,7 @@ $result = mysqli_query($conn, "SELECT * FROM books");
                       overflow: hidden;
                       background: chocolate
                       transition: max-height 0.3s ease;
+                     
                     }
                     
         .left-side label:hover,
@@ -127,6 +166,9 @@ $result = mysqli_query($conn, "SELECT * FROM books");
 
        .left-side input[type="checkbox"]:checked+label::after {
             transform: rotate(90deg);
+        }
+        .home{
+             margin-top:2vw;
         }
        .center_content{
         width: 72vw;
@@ -248,29 +290,17 @@ $result = mysqli_query($conn, "SELECT * FROM books");
         <section>
           <div class="left-side">
                <div class="home">
-                <a href="index1.html">Home</a>
+                <a href="index1.php">Home</a>
                 <a href="register_form.php">Registeration </a>
-                <a href="book_list.html">Books</a>
-                <a href="#">Edite</a>
-                <a href="#">Delete</a>
-                <a href="add_books.php">Add New Book</a>
              </div>
-                <ul>
-                  <input type="checkbox" id="dashbord">
-                  <label for="dashbord">Dashbord</label>
-                  <ul>
-                    <li><a href="#">Show Borrowed books</a></li>
-                    <li><a href="#">Reading history</a></li>
-                    <li><a href="#">Admin Dashbord</a></li>
-                  </ul>
-               </ul>
+                
        </div>
        <div class="center-content">
         <div class="login-container">
             <h2>Login</h2>
             <p>Digital Library Management System</p>
 
-            <form action="login.php" method="POST">
+            <form action="" method="POST">
 
                 <div class="form-group">
                     <label>Username</label>
@@ -293,7 +323,9 @@ $result = mysqli_query($conn, "SELECT * FROM books");
 
                 <button type="submit" class="login-btn">Login</button>
             </form>
-
+            <?php if ($error): ?>
+             <p style="color:red;"><?php echo $error; ?></p>
+            <?php endif; ?>
             <div class="extra-links">
                 <a href="#">Forgot Password?</a>
             </div>

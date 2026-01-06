@@ -1,9 +1,22 @@
+<?php
+session_start();
+require 'connection.php';
+
+if (!isset($_SESSION['userrole']) || $_SESSION['userrole'] !== 'admin') {
+    header("Location: login_form.php");
+    exit;
+}
+
+$result = mysqli_query($conn, "SELECT * FROM books");
+?>
+
+
 <!DOCTYPE html>
 <html>
 <head>
     <link rel="stylesheet" href="heraricy.css">
     <script src="script.js" defer></script>
-    <title>Admin Dashboard - Digital Library</title>
+    <title>Edit book</title>
 
      <style>
         *{
@@ -61,14 +74,13 @@
            
             
          }
-        /* Reset */
+      /* Reset */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: "Segoe UI", Roboto, Arial, sans-serif;
 }
-
 
 
 /* Top menu links */
@@ -157,51 +169,57 @@ label[for="dashbord"]:hover {
         border-radius: 15px 0px  0px 15px;
         background-position-x: right;
         margin-top: 8vw;
-       
+        display: block;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
        }
-      .center-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            margin-top:8vw;
-        }
-
-        .center-box {
+ form-box {
+            width: 400px;
+            margin: 120px auto;
             background: #fff;
-            padding: 40px 60px;
-            border-radius: 12px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h2 {
             text-align: center;
+            margin-bottom: 20px;
         }
 
-        .center-box h1 {
-            color: #e74c3c;
-            margin-bottom: 30px;
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
         }
 
-        .center-links {
-            display: grid;
-            grid-template-columns: auto auto;
-            gap: 25px 60px;
-            align-items: center;
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #d46a1f;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
         }
 
-        .label {
-            color: red;
-            font-weight: bold;
+        button:hover {
+            background: #b45718;
         }
 
-        .center-links a {
-            color: green;
-            font-weight: bold;
+        a {
+            display: block;
+            margin-top: 15px;
+            text-align: center;
             text-decoration: none;
-            font-size: 18px;
+            color: #333;
         }
 
-        .center-links a:hover {
-            text-decoration: underline;
-        }
+
   </style>
 </head>
 
@@ -216,57 +234,62 @@ label[for="dashbord"]:hover {
                     <a href="#">about Us</a>
                     <a href="#">Contact us</a>
                     <a href="#">help</a>
-                    <a href="feedbak.php">feedback</a>
+                    <a href="#">feedback</a>
                 </div>
              </div>
                <h1>Digital Library Mangnment System</h1>
              <div class="logo">
-                 <a class ="imga" href="index.php"><img src="devo8.png" alt="the image doesen't set"> </a>
+                 <a class ="imga" href="index1.html"><img src="devo8.png" alt="the image doesen't set"> </a>
              </div>
         </header>
 
         <section>
           <div class="left-side">
                <div class="home">
-                <a href="index.php">Home</a>
+                <a href="index1.php">Home</a>
                 <a href="register_form.php">Registeration </a>
                 <a href="book_list.php">Books</a>
-                <a href="book_borrow.php"> Borrow Books</a>
-               
-                
              </div>
                 <ul>
                   <input type="checkbox" id="dashbord">
                   <label for="dashbord">Dashbord</label>
                   <ul>
-                    <li><a href="borrowed_book.php">Show Borrowed books</a></li>
-                    <li><a href="borrow_history.php"> borrow history</a></li>
-                    <li><a href="#">user</a></li>
+                    <li><a href="#">Show Borrowed books</a></li>
+                    <li><a href="#">Reading history</a></li>
                   </ul>
                </ul>
        </div>
 
-       <div class="center-content">
-            <div class="center-box">
+       <div class="center_content">
+           <div class="form-box">
+            <h2>Select a Book to Edit</h2>
 
-                <h1> WelCome To Admin Dashboard</h1><br><br>
+<table border="1" cellpadding="10">
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Action</th>
+    </tr>
 
-                <div class="center-links">
-                    <div class="label">For Add Book</div>
-                    <a href="add_books.php">Add</a>
+<?php while ($row = mysqli_fetch_assoc($result)) { ?>
+    <tr>
+        <td><?php echo $row['book_id']; ?></td>
+        <td><?php echo htmlspecialchars($row['title']); ?></td>
+        <td><?php echo htmlspecialchars($row['author']); ?></td>
+        <td>
+            <a href="edit_book.php?id=<?php echo $row['book_id']; ?>">Edit</a>
 
-                    <div class="label">For Delete Book</div>
-                    <a href="delete_books.php">Delete</a>
-                        
-                    <div class="label">For Edit Book</div>
-                    <a href="edit_books.php">Edit</a>
+        </td>
+    </tr>
+<?php } ?>
 
-                    <br><br>
-                </div>
+</table>
 
-            </div>
-       </div>
-</section>
-
-</body>
+<br>
+<a href="admin_dashboard.php">⬅ Back to Dashboard</a>
+        </div>
+     </div>
+  </section>
+ </body>
 </html>

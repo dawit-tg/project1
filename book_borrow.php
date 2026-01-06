@@ -1,27 +1,12 @@
 <?php
- require'connection.php';
+session_start();
+require 'connection.php';
 
+$username = $_SESSION['username'] ?? '';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id = $_POST['book_id'];
-    $title = $_POST['title'];
-    $author = $_POST['author'];
-
-    $stmt = mysqli_prepare($conn, "INSERT INTO books (book_id, title, author) VALUES (?, ?, ?)");
-    
-    mysqli_stmt_bind_param($stmt, "iss", $id, $title, $author); 
-    if (mysqli_stmt_execute($stmt)) {
-        echo "New book added successfully!";
-    } else {
-        echo "Error: " . mysqli_error($conn);
-    }
-
-    mysqli_stmt_close($stmt);
-}
-
-
-$sql = "SELECT * FROM books";
-$result = mysqli_query($conn, $sql);
+$books = mysqli_query($conn,
+    "SELECT * FROM books WHERE status='available'"
+);
 ?>
 
 <!DOCTYPE html>
@@ -82,6 +67,7 @@ $result = mysqli_query($conn, $sql);
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
             margin-bottom: 30%;
             border: none;
+             margin-top:20px;
             
          }
          .left-side ul ul li a:active  {
@@ -110,6 +96,7 @@ $result = mysqli_query($conn, $sql);
                       overflow: hidden;
                       background: chocolate
                       transition: max-height 0.3s ease;
+                      
                     }
                     
         .left-side label:hover,
@@ -152,90 +139,79 @@ $result = mysqli_query($conn, $sql);
         margin-top: 8vw;
         padding: 40px;
        }
-    
+/* Page background */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f4f6fb;
+}
+
+/* Page title */
+h2 {
+    text-align: center;
+    margin-top: 40px;
+    color: #333;
+}
+
+/* Form container */
+form {
+    width: 420px;
+    margin: 30px auto;
+    background: #ffffff;
+    padding: 25px 30px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #555;
+}
+input[type="text"],
+select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-top: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
 
 
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #d46a1f;
+    box-shadow: 0 0 0 2px rgba(212,106,31,0.2);
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background: #d46a1f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+button:hover {
+    background: #b45718;
+}
+
+
+@media (max-width: 500px) {
     form {
-        width: 100%;
-        max-width: 380px;    
-        background: #fff;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        margin-left:20vw;
-      }
+        width: 90%;
+    }
+}
 
-
-    input {
-        width: 100%;
-        border: none;
-        border-bottom: 1px solid #000;
-        padding: 8px 4px;
-        margin-bottom: 25px;
-        outline: none;
-        box-sizing: border-box;
-     }
-
-
-       button {
-          padding: 6px 14px;
-          cursor: pointer;
-          background-color:#dd3;
-          margin-left:40%;
-      }
-      h1{
-        color:tomato;
-        font-size:40px;
-        margin-left:20vw;
-      }
-
-        .book-table {
-            width: 100%;
-            max-width: 600px;
-            margin: 15px auto;
-            border-collapse: collapse;
-            background: #ffffff;
-            font-family: "Segoe UI", Arial, sans-serif;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .book-table thead {
-            background-color: #1e90ff;
-            color: #ffffff;
-        }
-
-        .book-table th {
-            padding: 12px 15px;
-            text-align: left;
-            font-size: 15px;
-            font-weight: 600;
-        }
-
-        .book-table td {
-            padding: 10px 15px;
-            border-bottom: 1px solid #e6e6e6;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .book-table tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .book-table tbody tr:hover {
-            background-color: #eef6ff;
-        }
-
-        .book-table td:first-child {
-            text-align: center;
-            font-weight: 600;
-        }
-
-        .book-table tbody tr:last-child td {
-            border-bottom: none;
-        }
     </style>
 </head>
 <body>
@@ -243,11 +219,9 @@ $result = mysqli_query($conn, $sql);
              <div class="dropdown">
                <button class="dropbtn ">menu</button>
                 <div class="dropdown-content">
-                    <a href="logout.php">Logout</a>
+                    <a href="#">Logout</a>
                     <a href="#">Profile</a>
                     <a href="#">Setting</a>
-                    <a href="feedbak.php">Feedback</a>
-                    <a href="#">help</a>
                 </div>
              </div>
                <h1>Digital Library Mangnment System</h1>
@@ -263,47 +237,64 @@ $result = mysqli_query($conn, $sql);
                <div class="home">
                 <a href="index.php">Home</a>
                 <a href="register_form.php">Registeration </a>
-                <a href="book_list.html">Books</a>
-                <a href="admin_dashebord.php"> back to Admin Dashbord</a>
                 <a href="book_list.php">Books</a>
-                <li><a href="book_borrow.php"> borrow books</a></li>
+                <li><a href="book_borrow.php">Book Borrow</a></li>
+                <li><a href="borrow_history.php"> Borrowed book History</a></li>
+                <li><a href="logout.php"> Logout</a></li>
              </div>
        </div>
        <div class="center_content">
-         <h1>  Add Book hear</h1>
+        <?php if (isset($_SESSION['error'])) { ?>
+            <div style="background:#ffdddd;color:#a94442;padding:12px;border-radius:6px;margin-bottom:15px;">
+                <?php 
+                    echo $_SESSION['error']; 
+                    unset($_SESSION['error']);
+                ?>
+            </div>
+       <?php } ?>
 
-        <form method="POST" action="">
-            <input type="number" name="book_id" placeholder="Book ID" required><br><br><br>
-            <input type="text" name="title" placeholder="Book Title" required><br><br><br>
-            <input type="text" name="author" placeholder="Auother" required><br><br><br>
-            <button type="submit">Add Book</button><br><br><br>
+        <?php if (isset($_SESSION['success'])) { ?>
+            <div style="background:#ddffdd;color:#2e7d32;padding:12px;border-radius:6px;margin-bottom:15px;">
+                <?php 
+                    echo $_SESSION['success']; 
+                    unset($_SESSION['success']);
+                ?>
+            </div>
+        <?php } ?>
+
+
+        <h2>Borrow a Book</h2>
+        <form method="post" action="borrow_process.php">
+            <label>Username</label><br>
+            <input type="text" name="username"
+                value="<?php echo htmlspecialchars($username); ?>"
+                required><br><br>
+
+            <label>Select Book</label><br>
+            <select name="book_id" required>
+            <option value="">-- Select Book --</option>
+
+            <?php while ($row = mysqli_fetch_assoc($books)) { ?>
+            <option value="<?php echo $row['book_id']; ?>">
+            <?php echo htmlspecialchars($row['title']); ?>
+            </option>
+            <?php } ?>
+
+            </select><br><br>
+
+            <label>Borrow Days</label><br>
+            <select name="days">
+            <option value="7">7 Days</option>
+            <option value="14" selected>14 Days</option>
+            <option value="21">21 Days</option>
+            </select><br><br>
+
+            <button type="submit">Borrow Book</button>
+
         </form>
-
-        <h1>Book List</h1>
-        <table class="book-table">
-            <thead>
-            <tr>
-                <th>Book ID</th>
-                <th>Title</th>
-                <th>Author</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php while ($row = mysqli_fetch_assoc($result)): ?>
-            <tr>
-                <td><?php echo htmlspecialchars($row['book_id']); ?></td>
-                <td><?php echo htmlspecialchars($row['title']); ?></td>
-                <td><?php echo htmlspecialchars($row['author']); ?></td>
-            </tr>
-            <?php endwhile; ?>
-         </tbody>
-        </table>
-
-        <?php
-        // Close the database connection
-        mysqli_close($conn);
-        ?>
      </div>
-</section>
-</body>
+    </section>
+  </body>
 </html>
+
+  

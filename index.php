@@ -1,4 +1,7 @@
 
+<?php
+         session_start();
+        ?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -56,6 +59,7 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
             margin-bottom: 30%;
             border: none;
+         
             
          }
          .left-side ul ul li a:active  {
@@ -156,6 +160,8 @@
 }
 
 #search {
+    margin-top:2vw; 
+    margin-left:8vw;
     width: 500px;
     padding: 14px 20px;
     font-size: 16px;
@@ -206,12 +212,13 @@ th {
                     <a href="#">Setting</a>
                     <a href="#">about Us</a>
                     <a href="#">Countact Us</a>
-                    <a href="#">Logout</a>
+                    <a href="#">help</a>
+                    <a href="feedbak.php">feedback</a>
                 </div>
              </div>
                <h1>Digital Library Mangnment System</h1>
              <div class="logo">
-                 <a class ="imga" href="index1.html"><img src="devo8.png" alt="the image doesen't set"> </a>
+                 <a class ="imga" href="index.php"><img src="devo8.png" alt="the image doesen't set"> </a>
                  
              </div>
              
@@ -220,18 +227,18 @@ th {
         <section>
           <div class="left-side">
                <div class="home">
-                <a href="index1.html">Home</a>
+                <a href="index.php">Home</a>
                 <a href="register_form.php">Registeration </a>
                 <a href="login_form.php">Login</a>
-                <a href="book_list.php">Books</a>
 
              </div>
                
        </div>
        
        <div class="center_content">
+        
 
-      <input  type="text"  id="search" placeholder="Search by Book ID or Title...">
+      <input  type="text"  id="search" placeholder="Search by Book ID or Title..."><br><br>
       <div id="resultBox" style="display:none;">
         <table border="1" width="100%">
           <thead>
@@ -276,21 +283,18 @@ th {
     </section>
 
    <script>
-document.getElementById("search").addEventListener("keyup", function () {
+    document.getElementById("search").addEventListener("keyup", function () {
     let query = this.value.trim();
     let resultBox = document.getElementById("resultBox");
 
-    // If input is empty → hide results
     if (query === "") {
         resultBox.style.display = "none";
         document.getElementById("result").innerHTML = "";
         return;
     }
 
-    // Show results box
     resultBox.style.display = "block";
 
-    // Fetch matching books
     fetch("search_books.php?query=" + query)
         .then(response => response.text())
         .then(data => {
